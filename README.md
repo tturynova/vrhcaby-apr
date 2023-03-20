@@ -1,5 +1,3 @@
 # apr2-vrhcaby
-
-Dnes je převážně slunečno.
-Předpověď hlásí 15°C ale během poledních hodin se má zatáhnout.
-K večeru se očekává déšť.
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
