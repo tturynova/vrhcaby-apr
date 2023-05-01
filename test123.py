@@ -7,3 +7,6 @@ class Test:
 # new line of code
 # blablablablabla
 # code written in vscode
+
+
+# proc se to updatenulo pres muj alt account????
