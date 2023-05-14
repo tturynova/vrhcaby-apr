@@ -1,3 +1,5 @@
+import random 
+
 class Hra:
     def __init__(self, hrac1, hrac2):
         self.hrac1 = hrac1
@@ -39,7 +41,21 @@ class Dvojkostka:
             return [hod1, hod2]
         
 class Bar:
-    ...
+    def __init__(self):
+        self.kameny = []
+    
+    def pridej_kamen(self, color):
+        self.kameny.append(color)
+    
+    def odeber_kamen(self, color):
+        if color in self.kameny:
+            self.kameny.remove(color)
+    
+    def vrat_pocet_kamenu(self):
+        return len(self.kameny)
+    
+    def je_prazdny(self):
+        return len(self.kameny) == 0
 
 class HerniKamen:
       def __init__(self, pozice=-1, barva=''):
