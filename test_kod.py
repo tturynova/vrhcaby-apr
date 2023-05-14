@@ -27,10 +27,17 @@ class HerniPole:
     def __init__(self):
         self.bily_pole = []
         self.cerne_pole = []
-    #aaaaaaa
+        ...
         
 class Dvojkostka:
-    ...
+    def hod(self):
+        hod1 = random.randint(1, 6)
+        hod2 = random.randint(1, 6)
+        if hod1 == hod2:
+            return [hod1, hod1, hod1, hod1]
+        else:
+            return [hod1, hod2]
+        
 class Bar:
     ...
 
@@ -38,13 +45,10 @@ class HerniKamen:
       def __init__(self, pozice=-1, barva=''):
         self.pozice = pozice
         self.barva = barva
-        
-class Hrac:
-    ...
-
-    #aa
+        ...
 
 class Hrac:
     ...
 
-    #aa
+class Hrac:
+    ...
