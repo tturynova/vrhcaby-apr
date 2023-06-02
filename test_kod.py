@@ -63,8 +63,26 @@ class HerniKamen:
         self.barva = barva
         ...
 
-class Hrac:
-    ...
+class KonzolovyHrac:
+    def __init__(self, jmeno):
+        self.jmeno = jmeno
 
-class Hrac:
+    def tahni(self, herni_pole, dvojkostka, bar):
+        while True:
+            try:
+                hod = input(f"{self.jmeno}, zadej svůj hod (oddělený mezerou): ")
+                hod1, hod2 = map(int, hod.split())
+                if hod1 not in dvojkostka.mozne_hody or hod2 not in dvojkostka.mozne_hody:
+                    raise ValueError
+                tah = (hod1, hod2)
+                if bar.vrat_pocet_kamenu() > 0 and not herni_pole.je_povoleny_tah(tah, bar):
+                    raise ValueError
+                elif bar.vrat_pocet_kamenu() == 0 and not herni_pole.je_povoleny_tah(tah):
+                    raise ValueError
+                else:
+                    return tah
+            except ValueError:
+                print("Neplatný tah, zkus to znovu.")
+
+class AiHrac:
     ...
