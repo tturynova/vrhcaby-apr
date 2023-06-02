@@ -42,6 +42,7 @@ class HerniPole:
         self.pole[16] = 3
         self.pole[18] = 5
         self.pole[23] = -2
+        self.bar = Bar()
      
     def vypis_pole(self):
         print("13 14 15 16 17 18 | 19 20 21 22 23 24")
@@ -62,30 +63,62 @@ class HerniPole:
         print("12 11 10  9  8  7 |  6  5  4  3  2  1")   
 
     def proved_tah(self, tah):
-      for i in range(len(tah)):
-        if tah[i] not in Dvojkostka().mozne_hody:
+        if not self.je_povoleny_tah(tah):
             raise ValueError("Neplatný tah")
-        if bar.vrat_pocet_kamenu() > 0 and not self.je_povoleny_tah(tah, bar):
-            raise ValueError("Neplatný tah")
-        elif bar.vrat_pocet_kamenu() == 0 and not self.je_povoleny_tah(tah):
-            raise ValueError("Neplatný tah")
+        if self.bar.vrat_pocet_kamenu() > 0:
+            pozice = tah[1] - 1
+            self.pole[pozice] += 1
+            self.bar.odeber_kamen(self.hraci[self.na_tahu].barva)
         else:
-            self.pole[self.hraci[self.na_tahu].kameny[i].pozice] = 0
-            self.pole[self.hraci[self.na_tahu].kameny[i].pozice + tah[i]] += 1
-            self.hraci[self.na_tahu].kameny[i].pozice += tah[i]
-                    
-            if self.hraci[self.na_tahu].kameny[i].pozice == 23:
-              self.pole[23] = self.hraci[self.na_tahu].kameny[i].barva
-              self.pole[self.hraci[self.na_tahu].kameny[i].pozice] = 0
-              self.hraci[self.na_tahu].kameny.remove(self.hraci[self.na_tahu].kameny[i])
-              self.hraci[self.na_tahu].pocet_vyhozenych_kamenu += 1
-              self.hraci[self.na_tahu].pocet_umistenych_kamenu += 1
-              break
-                    
-            self.na_tahu = (self.na_tahu + 1) % 2
+            pozice_od = tah[0]
+            pozice_do = tah[1]
+            if self.pole[pozice_od] <= 0:
+                raise ValueError("Neplatný tah")
+            self.pole[pozice_od] -= 1
+            if self.pole[pozice_do] == -1:
+                self.pole[pozice_do] = 1
+                self.bar.pridej_kamen(self.hraci[self.na_tahu].barva)
+            else:
+                self.pole[pozice_do] += 1
 
+        self.na_tahu = (self.na_tahu + 1) % 2
+                      
+    def mozne_tahy(self, dvojkostka, bar):
+        tahy = []
+        for hod in dvojkostka.hod():
+            if bar.vrat_pocet_kamenu() > 0:
+                if self.pole[hod - 1] >= -1:
+                    tahy.append((0, hod))
+        else:
+            for pozice in range(24):
+                if self.pole[pozice] > 0:
+                    nova_pozice = pozice + hod
+                    if nova_pozice < 24 and self.pole[nova_pozice] >= -1:
+                        tahy.append((pozice, nova_pozice))
+        return tahy
 
+    def je_povoleny_tah(self, tah):
+        if len(tah) == 0:
+            return False
+        if self.bar.vrat_pocet_kamenu() > 0:
+            return tah[0] == 0 or tah[0] == 1
+        for pozice in range(24):
+            if self.pole[pozice] > 0:
+                nova_pozice = pozice + tah[0]
+                if nova_pozice < 24 and self.pole[nova_pozice] >= -1:
+                    return True
+        return False
+
+    def je_konec_hry(self):
+        pocet_kamenu_v_cili = sum(self.pole[18:])
+        if pocet_kamenu_v_cili == 15:
+            return True
+        return all(kamen <= 0 for kamen in self.pole[:18])
+    
 class Dvojkostka:
+    def __init__(self):
+        self.mozne_hody = [1, 2, 3, 4, 5, 6]
+
     def hod(self):
         hod1 = random.randint(1, 6)
         hod2 = random.randint(1, 6)
@@ -151,4 +184,5 @@ class AiHrac:
 
     def zvol_tah(self, mozne_tahy):
         return mozne_tahy[0]
+
 
