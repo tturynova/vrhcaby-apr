@@ -12,6 +12,7 @@ class Hra:
 
     def hraj(self):
         while not self.konec_hry:
+            self.herni_pole.vypis_pole()
             tah_hrace1 = self.hrac1.tahni(self.herni_pole, self.dvojkostka, self.bar)
             self.herni_pole.proved_tah(tah_hrace1)
             if self.herni_pole.je_konec_hry():
@@ -156,8 +157,9 @@ class HerniKamen:
         self.barva = barva
 
 class KonzolovyHrac:
-    def __init__(self, jmeno):
+    def __init__(self, jmeno, symbol):
         self.jmeno = jmeno
+        self.symbol = symbol
 
     def tahni(self, herni_pole, dvojkostka, bar):
         while True:
@@ -177,8 +179,9 @@ class KonzolovyHrac:
                 print("Neplatný tah, zkus to znovu.")
 
 class AiHrac:
-    def __init__(self, jmeno):
+    def __init__(self, jmeno, symbol):
         self.jmeno = jmeno
+        self.symbol = symbol
 
     def tahni(self, herni_pole, dvojkostka, bar):
         mozne_tahy = herni_pole.mozne_tahy(dvojkostka, bar)
@@ -190,7 +193,7 @@ class AiHrac:
     def zvol_tah(self, mozne_tahy):
         return mozne_tahy[0]
 
-hrac1 = Hrac("Hráč 1", "O")
+hrac1 = KonzolovyHrac("Hráč 1", "O")
 hrac2 = AiHrac("Ai", "X")
 
 hra = Hra(hrac1, hrac2)
