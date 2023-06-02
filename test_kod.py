@@ -145,10 +145,15 @@ class Bar:
         return len(self.kameny) == 0
 
 class HerniKamen:
-      def __init__(self, pozice=-1, barva=''):
+    def __init__(self, pozice=-1, barva=''):
         self.pozice = pozice
         self.barva = barva
-        ...
+        
+    def nastav_pozici(self, pozice):
+        self.pozice = pozice
+
+    def nastav_barvu(self, barva):
+        self.barva = barva
 
 class KonzolovyHrac:
     def __init__(self, jmeno):
@@ -185,10 +190,8 @@ class AiHrac:
     def zvol_tah(self, mozne_tahy):
         return mozne_tahy[0]
 
-hrac1 = KonzolovyHrac("Hráč 1")
-hrac2 = AiHrac("Počítač")
+hrac1 = Hrac("Hráč 1", "O")
+hrac2 = AiHrac("Ai", "X")
 
 hra = Hra(hrac1, hrac2)
-
-
 hra.hraj()
