@@ -185,4 +185,10 @@ class AiHrac:
     def zvol_tah(self, mozne_tahy):
         return mozne_tahy[0]
 
+hrac1 = KonzolovyHrac("Hráč 1")
+hrac2 = AiHrac("Počítač")
 
+hra = Hra(hrac1, hrac2)
+
+
+hra.hraj()
