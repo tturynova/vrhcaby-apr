@@ -9,22 +9,27 @@ class Hra:
         self.bar = Bar()
         self.konec_hry = False
         self.vitez = None
+        self.na_tahu = hrac1
 
     def hraj(self):
         while not self.konec_hry:
-            self.herni_pole.vypis_pole()
-            tah_hrace1 = self.hrac1.tahni(self.herni_pole, self.dvojkostka, self.bar)
-            self.herni_pole.proved_tah(tah_hrace1)
-            if self.herni_pole.je_konec_hry():
-                self.konec_hry = True
-                self.vitez = self.hrac1
-                break
-            tah_hrace2 = self.hrac2.tahni(self.herni_pole, self.dvojkostka, self.bar)
-            self.herni_pole.proved_tah(tah_hrace2)
-            if self.herni_pole.je_konec_hry():
-                self.konec_hry = True
-                self.vitez = self.hrac2
-                break
+            hody_kostkou = self.dvojkostka.hod()
+            while hody_kostkou != []:
+                self.herni_pole.vypis_pole()
+                print(self.bar)
+                print("")
+                print("kostky :" + str(hody_kostkou))
+                tah_hrace = self.na_tahu.tahni(self.herni_pole, hody_kostkou, self.bar)
+                self.herni_pole.proved_tah(tah_hrace, self.na_tahu)
+                if self.herni_pole.je_konec_hry():
+                    self.konec_hry = True
+                    self.vitez = self.na_tahu
+                    break
+
+            if self.na_tahu is self.hrac1:
+                self.na_tahu = self.hrac2
+            else:
+                self.na_tahu = self.hrac1
 
         self.zobraz_vysledky()
     
@@ -46,57 +51,78 @@ class HerniPole:
         self.bar = Bar()
      
     def vypis_pole(self):
-        print("13 14 15 16 17 18 | 19 20 21 22 23 24")
-        print("------------------------------------")
-        for i in range(18, 12, -6):
-            print(i+1, end=" ")
-            for j in range(5): 
-                print("|", end=" ")
-                if 0 <= 18+j+i <= 23 and self.pole[18+j+i] > 0:
-                    print("O", end=" ")
-                elif 0 >= 18+j+i >= 23 and self.pole[18+j+i] < 0:
-                    print("X", end=" ")
+        vertical_space = max(map(abs, self.pole))
+        start = 11
+        end = -1
+        step = 1
+        start2 = 0
+        end2 = vertical_space
+        border = 5
+        print(" 12 11 10  9  8  7     6  5  4  3  2  1")
+        print("╔═══════════════════╤════════════════════╗")
+        for j in range(2):
+            for i in range(start2, end2, step):
+                print("║ ", end="")
+                for index in range(start, end, -step):
+                    if index == border:
+                        print("│", end="  ")
+                    if abs(self.pole[index]) > i:
+                        if self.pole[index] > 0:
+                            print("X", end="  ")
+                        elif self.pole[index] < 0:
+                            print("O", end="  ")
+                    else:
+                        print("∙", end="  ")
                 else:
-                    print(".", end=" ")
-            print("|", end=" ")
-            print(i+6)
-        print("------------------------------------")
-        print("12 11 10  9  8  7 |  6  5  4  3  2  1")   
+                    print("║")
+            if j == 0:
+                print("║                   │                    ║")
+            start = 12
+            end = 24
+            step = -1
+            start2 = vertical_space - 1
+            end2 = -1
+            border = 18
+        print("╚═══════════════════╧════════════════════╝")
+        print(" 13 14 15 16 17 18    19 20 21 22 23 24")
 
-    def proved_tah(self, tah):
+    def vypis_pole2(self):
+        for i, pole in enumerate(self.pole):
+            print(i, pole)
+
+    def proved_tah(self, tah, hrac):
         if not self.je_povoleny_tah(tah):
             raise ValueError("Neplatný tah")
         if self.bar.vrat_pocet_kamenu() > 0:
             pozice = tah[1] - 1
             self.pole[pozice] += 1
-            self.bar.odeber_kamen(self.hraci[self.na_tahu].barva)
+            self.bar.odeber_kamen(hrac.barva)
         else:
             pozice_od = tah[0]
             pozice_do = tah[1]
-            if self.pole[pozice_od] <= 0:
+            if self.pole[pozice_od] <= 0 or self.pole[pozice_do] < -1:
                 raise ValueError("Neplatný tah")
             self.pole[pozice_od] -= 1
             if self.pole[pozice_do] == -1:
                 self.pole[pozice_do] = 1
-                self.bar.pridej_kamen(self.hraci[self.na_tahu].barva)
+                self.bar.pridej_kamen(hrac.barva)
             else:
                 self.pole[pozice_do] += 1
 
-        self.na_tahu = (self.na_tahu + 1) % 2
+        #self.na_tahu = (self.na_tahu + 1) % 2
                       
-    def mozne_tahy(self, dvojkostka, bar):
-        tahy = []
-        for hod in dvojkostka.hod():
+    def mozne_tahy(self, bar, kostky):
+        tahy = set()
+        for hod in kostky:
             if bar.vrat_pocet_kamenu() > 0:
                 if self.pole[hod - 1] >= -1:
-                    tahy.append((0, hod))
-        else:
+                    tahy.add((0, hod))
             for pozice in range(24):
                 if self.pole[pozice] > 0:
                     nova_pozice = pozice + hod
                     if nova_pozice < 24 and self.pole[nova_pozice] >= -1:
-                        tahy.append((pozice, nova_pozice))
-        return tahy
+                        tahy.add((pozice + 1, nova_pozice + 1))
+        return list(tahy)
 
     def je_povoleny_tah(self, tah):
         if len(tah) == 0:
@@ -118,7 +144,7 @@ class HerniPole:
     
 class Dvojkostka:
     def __init__(self):
-        self.mozne_hody = [1, 2, 3, 4, 5, 6]
+        self.mozne_hody = [0, 1, 2, 3, 4, 5, 6]
 
     def hod(self):
         hod1 = random.randint(1, 6)
@@ -144,6 +170,9 @@ class Bar:
     
     def je_prazdny(self):
         return len(self.kameny) == 0
+    
+    def __str__(self) -> str:
+        return str(self.kameny)
 
 class HerniKamen:
     def __init__(self, pozice=-1, barva=''):
@@ -157,31 +186,36 @@ class HerniKamen:
         self.barva = barva
 
 class KonzolovyHrac:
-    def __init__(self, jmeno, symbol):
+    def __init__(self, jmeno, barva):
         self.jmeno = jmeno
-        self.symbol = symbol
+        self.barva = barva
 
-    def tahni(self, herni_pole, dvojkostka, bar):
+    def tahni(self, herni_pole, hody_kostka, bar):
+        mozne_tahy = herni_pole.mozne_tahy(bar, hody_kostka)
+        print("mozne tahy: " + str(mozne_tahy))
         while True:
             try:
-                hod = input(f"{self.jmeno}, zadej svůj hod (oddělený mezerou): ")
+                hod = input(f"{self.jmeno}, zadej svůj tah (oddělený mezerou): ")
                 hod1, hod2 = map(int, hod.split())
-                if hod1 not in dvojkostka.mozne_hody or hod2 not in dvojkostka.mozne_hody:
+                if (hod1, hod2) not in mozne_tahy:
                     raise ValueError
-                tah = (hod1, hod2)
-                if bar.vrat_pocet_kamenu() > 0 and not herni_pole.je_povoleny_tah(tah, bar):
-                    raise ValueError
-                elif bar.vrat_pocet_kamenu() == 0 and not herni_pole.je_povoleny_tah(tah):
-                    raise ValueError
-                else:
-                    return tah
+                #if hod1 not in dvojkostka.mozne_hody or hod2 not in dvojkostka.mozne_hody:
+                #    raise ValueError
+                hody_kostka.remove(abs(hod2 - hod1))
+                tah = (hod1 - 1, hod2 - 1)
+                # if bar.vrat_pocet_kamenu() > 0 and not herni_pole.je_povoleny_tah(tah, bar):
+                #     raise ValueError
+                # elif bar.vrat_pocet_kamenu() == 0 and not herni_pole.je_povoleny_tah(tah):
+                #     raise ValueError
+                # else:
+                return tah
             except ValueError:
                 print("Neplatný tah, zkus to znovu.")
 
 class AiHrac:
-    def __init__(self, jmeno, symbol):
+    def __init__(self, jmeno, barva):
         self.jmeno = jmeno
-        self.symbol = symbol
+        self.barva = barva
 
     def tahni(self, herni_pole, dvojkostka, bar):
         mozne_tahy = herni_pole.mozne_tahy(dvojkostka, bar)
@@ -193,8 +227,9 @@ class AiHrac:
     def zvol_tah(self, mozne_tahy):
         return mozne_tahy[0]
 
-hrac1 = KonzolovyHrac("Hráč 1", "O")
-hrac2 = AiHrac("Ai", "X")
+hrac1 = KonzolovyHrac("Hráč 1", "X")
+#hrac2 = AiHrac("Ai", "X")
+hrac2 = KonzolovyHrac("Hráč 2", "O")
 
 hra = Hra(hrac1, hrac2)
 hra.hraj()
