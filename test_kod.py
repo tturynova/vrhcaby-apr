@@ -27,9 +27,15 @@ class Hra:
 
 class HerniPole:
     def __init__(self):
-        self.bily_pole = []
-        self.cerne_pole = []
-        ...
+        self.pole = [0] * 24
+        self.pole[0] = 2
+        self.pole[5] = -5
+        self.pole[7] = -3
+        self.pole[11] = 5
+        self.pole[12] = -5
+        self.pole[16] = 3
+        self.pole[18] = 5
+        self.pole[23] = -2
         
 class Dvojkostka:
     def hod(self):
@@ -85,4 +91,16 @@ class KonzolovyHrac:
                 print("Neplatný tah, zkus to znovu.")
 
 class AiHrac:
-    ...
+     def __init__(self, jmeno):
+        self.jmeno = jmeno
+
+    def tahni(self, herni_pole, dvojkostka, bar):
+        mozne_tahy = herni_pole.mozne_tahy(dvojkostka, bar)
+        if not mozne_tahy:
+            return None
+        else:
+            return self.zvol_tah(mozne_tahy)
+
+    def zvol_tah(self, mozne_tahy):
+        return mozne_tahy[0]
+
