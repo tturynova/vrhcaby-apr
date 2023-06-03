@@ -40,15 +40,21 @@ class Hra:
 class HerniPole:
     def __init__(self):
         self.pole = [0] * 24
-        self.pole[0] = 2
-        self.pole[5] = -5
-        self.pole[7] = -3
-        self.pole[11] = 5
-        self.pole[12] = -5
-        self.pole[16] = 3
-        self.pole[18] = 5
-        self.pole[23] = -2
         self.bar = Bar()
+        hodnoty = [2,5,3,5]
+        for x in range(4):
+            limit = [0,5] if x < 2 else [6,11]
+            bod = self.vygeneruj_bod(limit)
+            print(x, bod)
+            self.pole[bod] = hodnoty[x]
+            self.pole[23-bod] = -hodnoty[x]
+        self.bar = Bar()
+    
+    def vygeneruj_bod(self, limit: []):
+        rand = random.randint(limit[0], limit[1])
+        while self.pole[rand] != 0:
+            rand = self.vygeneruj_bod(limit)
+        return rand
      
     def vypis_pole(self):
         vertical_space = max(map(abs, self.pole))
