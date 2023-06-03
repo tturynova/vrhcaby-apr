@@ -18,9 +18,12 @@ class Hra:
                 self.herni_pole.vypis_pole()
                 print(self.bar)
                 print("")
-                print("kostky :" + str(hody_kostkou))
+                print("V tomto kole jsi hodil/a:" + str(hody_kostkou))
                 tah_hrace = self.na_tahu.tahni(self.herni_pole, hody_kostkou, self.bar)
-                self.herni_pole.proved_tah(tah_hrace, self.na_tahu)
+                if tah_hrace is not None:
+                    self.herni_pole.proved_tah(tah_hrace, self.bar, hody_kostkou)
+                else: 
+                    print(f"{self.na_tahu.jmeno} nemá žádné další tahy.")
                 if self.herni_pole.je_konec_hry():
                     self.konec_hry = True
                     self.vitez = self.na_tahu
@@ -34,23 +37,26 @@ class Hra:
         self.zobraz_vysledky()
     
     def zobraz_vysledky(self):
-        print("Vítěz: ", self.vitez.jmeno)
+        if self.vitez is None:
+            print("Remíza")
+        else:    
+            print("Vítěz: ", self.vitez.jmeno)
         print("Stav herního pole: ", self.herni_pole.stav())
 
 class HerniPole:
     def __init__(self):
         self.pole = [0] * 24
         self.bar = Bar()
-        hodnoty = [2,5,3,5]
+        hodnoty = [2, 5, 3, 5]
         for x in range(4):
-            limit = [0,5] if x < 2 else [6,11]
+            limit = [0, 5] if x < 2 else [6, 11]
             bod = self.vygeneruj_bod(limit)
             print(x, bod)
             self.pole[bod] = hodnoty[x]
-            self.pole[23-bod] = -hodnoty[x]
+            self.pole[23 - bod] = - hodnoty[x]
         self.bar = Bar()
     
-    def vygeneruj_bod(self, limit: []):
+    def vygeneruj_bod(self, limit):
         rand = random.randint(limit[0], limit[1])
         while self.pole[rand] != 0:
             rand = self.vygeneruj_bod(limit)
@@ -96,26 +102,24 @@ class HerniPole:
         for i, pole in enumerate(self.pole):
             print(i, pole)
 
-    def proved_tah(self, tah, hrac):
-        if not self.je_povoleny_tah(tah):
+    def proved_tah(self, tah, bar, hody_kostkou):
+        if not self.je_povoleny_tah(tah, self.bar, hody_kostkou):
             raise ValueError("Neplatný tah")
         if self.bar.vrat_pocet_kamenu() > 0:
             pozice = tah[1] - 1
             self.pole[pozice] += 1
-            self.bar.odeber_kamen(hrac.barva)
+            self.bar.odeber_kamen(bar.barva)
         else:
             pozice_od = tah[0]
             pozice_do = tah[1]
-            if self.pole[pozice_od] <= 0 or self.pole[pozice_do] < -1:
+            if self.pole[pozice_od] <= 0:
                 raise ValueError("Neplatný tah")
             self.pole[pozice_od] -= 1
             if self.pole[pozice_do] == -1:
                 self.pole[pozice_do] = 1
-                self.bar.pridej_kamen(hrac.barva)
+                self.bar.pridej_kamen(bar.barva)
             else:
                 self.pole[pozice_do] += 1
-
-        #self.na_tahu = (self.na_tahu + 1) % 2
                       
     def mozne_tahy(self, bar, kostky):
         tahy = set()
@@ -130,8 +134,8 @@ class HerniPole:
                         tahy.add((pozice + 1, nova_pozice + 1))
         return list(tahy)
 
-    def je_povoleny_tah(self, tah):
-        if len(tah) == 0:
+    def je_povoleny_tah(self, tah, bar, hody_kostkou):
+        if  tah is None or len(tah) == 0:
             return False
         if self.bar.vrat_pocet_kamenu() > 0:
             return tah[0] == 0 or tah[0] == 1
@@ -150,7 +154,7 @@ class HerniPole:
     
 class Dvojkostka:
     def __init__(self):
-        self.mozne_hody = [0, 1, 2, 3, 4, 5, 6]
+        self.mozne_hody = [1, 2, 3, 4, 5, 6]
 
     def hod(self):
         hod1 = random.randint(1, 6)
@@ -191,51 +195,47 @@ class HerniKamen:
     def nastav_barvu(self, barva):
         self.barva = barva
 
-class KonzolovyHrac:
+class Hrac:
     def __init__(self, jmeno, barva):
         self.jmeno = jmeno
         self.barva = barva
 
-    def tahni(self, herni_pole, hody_kostka, bar):
-        mozne_tahy = herni_pole.mozne_tahy(bar, hody_kostka)
-        print("mozne tahy: " + str(mozne_tahy))
-        while True:
-            try:
-                hod = input(f"{self.jmeno}, zadej svůj tah (oddělený mezerou): ")
-                hod1, hod2 = map(int, hod.split())
-                if (hod1, hod2) not in mozne_tahy:
-                    raise ValueError
-                #if hod1 not in dvojkostka.mozne_hody or hod2 not in dvojkostka.mozne_hody:
-                #    raise ValueError
-                hody_kostka.remove(abs(hod2 - hod1))
-                tah = (hod1 - 1, hod2 - 1)
-                # if bar.vrat_pocet_kamenu() > 0 and not herni_pole.je_povoleny_tah(tah, bar):
-                #     raise ValueError
-                # elif bar.vrat_pocet_kamenu() == 0 and not herni_pole.je_povoleny_tah(tah):
-                #     raise ValueError
-                # else:
-                return tah
-            except ValueError:
-                print("Neplatný tah, zkus to znovu.")
-
-class AiHrac:
-    def __init__(self, jmeno, barva):
-        self.jmeno = jmeno
-        self.barva = barva
-
-    def tahni(self, herni_pole, dvojkostka, bar):
-        mozne_tahy = herni_pole.mozne_tahy(dvojkostka, bar)
-        if not mozne_tahy:
-            return None
+    def tahni(self, herni_pole, hody_kostkou, bar):
+        mozne_tahy = herni_pole.mozne_tahy(bar, hody_kostkou)
+        print("Tahy, které nyní můžeš provést: " + str(mozne_tahy))
+        if mozne_tahy:
+            while True:
+                try:
+                    hod = input(f"{self.jmeno}, zadej svůj tah (dvě čísla z výběru tahů oddělená mezerou): ")
+                    hod1, hod2 = map(int, hod.split())
+                    if (hod1, hod2) not in mozne_tahy:
+                        raise ValueError
+                    hody_kostkou.remove(abs(hod2 - hod1))
+                    tah = (hod1 - 1, hod2 - 1)
+                    return tah
+                except ValueError:
+                    print("Neplatný tah, zkus to znovu.")
         else:
-            return self.zvol_tah(mozne_tahy)
+            print(f"{self.jmeno} nemá žádné další tahy.")
+            return None
+        
+class KonzolovyHrac(Hrac): 
+    pass               
 
-    def zvol_tah(self, mozne_tahy):
-        return mozne_tahy[0]
+class AiHrac(Hrac):
+     def tahni(self, herni_pole, hody_kostkou, bar):
+        mozne_tahy = herni_pole.mozne_tahy(bar, hody_kostkou)
+        platne_tahy = []
+        if mozne_tahy:
+            tah = random.choice(mozne_tahy)
+            if herni_pole.je_povoleny_tah(tah, bar, hody_kostkou):
+                print(f"{self.jmeno} provedl tah: {tah}")
+                return tah
+        return None
+                    
 
 hrac1 = KonzolovyHrac("Hráč 1", "X")
-#hrac2 = AiHrac("Ai", "X")
-hrac2 = KonzolovyHrac("Hráč 2", "O")
+hrac2 = AiHrac("Hráč 2", "O")
 
 hra = Hra(hrac1, hrac2)
 hra.hraj()
