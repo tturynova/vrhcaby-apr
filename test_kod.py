@@ -1,4 +1,4 @@
-import random 
+import random
 
 class Hra:
     def __init__(self, hrac1, hrac2):
@@ -21,7 +21,7 @@ class Hra:
                 print("V tomto kole jsi hodil/a:" + str(hody_kostkou))
                 tah_hrace = self.na_tahu.tahni(self.herni_pole, hody_kostkou, self.bar)
                 if tah_hrace is not None:
-                    self.herni_pole.proved_tah(tah_hrace, self.bar, hody_kostkou)
+                    self.herni_pole.proved_tah(tah_hrace, self.na_tahu, hody_kostkou)
                 else: 
                     print(f"{self.na_tahu.jmeno} nemá žádné další tahy.")
                 if self.herni_pole.je_konec_hry():
@@ -110,6 +110,10 @@ class HerniPole:
             self.pole[pozice] += 1
             self.bar.odeber_kamen(bar.barva)
         else:
+            if bar == 0 and tah[0] != tah[1]:
+                raise ValueError("Neplatný tah")
+            if tah not in self.mozne_tahy(bar, hody_kostkou) and bar != 0:
+                raise ValueError("Neplatný tah")
             pozice_od = tah[0]
             pozice_do = tah[1]
             if self.pole[pozice_od] <= 0:
@@ -235,7 +239,7 @@ class AiHrac(Hrac):
                     
 
 hrac1 = KonzolovyHrac("Hráč 1", "X")
-hrac2 = AiHrac("Hráč 2", "O")
+hrac2 = KonzolovyHrac("Hráč 2", "O")
 
 hra = Hra(hrac1, hrac2)
 hra.hraj()
