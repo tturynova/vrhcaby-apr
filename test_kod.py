@@ -102,7 +102,7 @@ class HerniPole:
         if self.bar.vrat_pocet_kamenu() > 0:
             pozice = tah[1] - 1
             self.pole[pozice] += 1
-            self.bar.odeber_kamen(hrac.barva)
+            self.bar.odeber_kamen(hrac.symbol)
         else:
             pozice_od = tah[0]
             pozice_do = tah[1]
@@ -111,7 +111,7 @@ class HerniPole:
             self.pole[pozice_od] -= 1
             if self.pole[pozice_do] == -1:
                 self.pole[pozice_do] = 1
-                self.bar.pridej_kamen(hrac.barva)
+                self.bar.pridej_kamen(hrac.symbol)
             else:
                 self.pole[pozice_do] += 1
 
