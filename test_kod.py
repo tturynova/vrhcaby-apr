@@ -25,7 +25,7 @@ class Hra:
                     self.konec_hry = True
                     self.vitez = self.na_tahu
                     break
-            if self.na_tahu is self.hrac1:
+            if self.na_tahu == self.hrac1:
                 self.na_tahu = self.hrac2
             else:
                 self.na_tahu = self.hrac1
@@ -47,12 +47,10 @@ class HerniPole:
         for x in range(4):
             limit = [0,5] if x < 2 else [6,11]
             bod = self.vygeneruj_bod(limit)
-            print(x, bod)
             self.pole[bod] = hodnoty[x]
             self.pole[23 - bod] = - hodnoty[x]
-        self.bar = Bar()
-    
-    def vygeneruj_bod(self, limit: []):
+
+    def vygeneruj_bod(self, limit):
         rand = random.randint(limit[0], limit[1])
         while self.pole[rand] != 0:
             rand = self.vygeneruj_bod(limit)
@@ -117,7 +115,6 @@ class HerniPole:
             else:
                 self.pole[pozice_do] += 1
 
-                      
     def mozne_tahy(self, bar, kostky):
         tahy = set()
         for hod in kostky:
@@ -151,7 +148,7 @@ class HerniPole:
     
 class Dvojkostka:
     def __init__(self):
-        self.mozne_hody = [0, 1, 2, 3, 4, 5, 6]
+        self.mozne_hody = [1, 2, 3, 4, 5, 6]
 
     def hod(self):
         hod1 = random.randint(1, 6)
@@ -165,12 +162,12 @@ class Bar:
     def __init__(self):
         self.kameny = []
     
-    def pridej_kamen(self, barva):
-        self.kameny.append(barva)
+    def pridej_kamen(self, symbol):
+        self.kameny.append(symbol)
     
-    def odeber_kamen(self, barva):
-        if barva in self.kameny:
-            self.kameny.remove(barva)
+    def odeber_kamen(self, symbol):
+        if symbol in self.kameny:
+            self.kameny.remove(symbol)
     
     def vrat_pocet_kamenu(self):
         return len(self.kameny)
@@ -182,20 +179,20 @@ class Bar:
         return str(self.kameny)
 
 class HerniKamen:
-    def __init__(self, pozice=-1, barva=''):
+    def __init__(self, pozice=-1, symbol=''):
         self.pozice = pozice
-        self.barva = barva
+        self.symbol = symbol
         
     def nastav_pozici(self, pozice):
         self.pozice = pozice
 
-    def nastav_barvu(self, barva):
-        self.barva = barva
+    def nastav_barvu(self, symbol):
+        self.symbol = symbol
 
 class Hrac:
-    def __init__(self, jmeno, barva):
+    def __init__(self, jmeno, symbol):
         self.jmeno = jmeno
-        self.barva = barva
+        self.symbol = symbol
 
     def tahni(self, herni_pole, hody_kostkou, bar):
         mozne_tahy = herni_pole.mozne_tahy(bar, hody_kostkou)
@@ -232,6 +229,7 @@ class AiHrac(Hrac):
      # zatim nefunkcni
 
 hrac1 = KonzolovyHrac("Hráč 1", "X")
+#hrac2 = AiHrac("Hráč 2", "O")
 hrac2 = KonzolovyHrac("Hráč 2", "O")
 
 hra = Hra(hrac1, hrac2)
