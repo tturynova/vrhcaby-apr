@@ -253,5 +253,5 @@ hrac2 = KonzolovyHrac("Hráč 2", "O")
 
 hra = Hra(hrac1, hrac2)
 hra.hraj()
-kode s#
+s#
 
