@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-
-=======
-=======
->>>>>>> 7faaec4c3ae78dc5da5d7359b100cc1a39088464
 # vrhcaby-apr
 Python implementace deskové hry jako seminární práce.
 
