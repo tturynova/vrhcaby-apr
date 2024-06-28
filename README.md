@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 
 =======
+=======
+>>>>>>> 7faaec4c3ae78dc5da5d7359b100cc1a39088464
 # vrhcaby-apr
 Python implementace deskové hry jako seminární práce.
 
@@ -44,5 +47,3 @@ Hráč
 - Statistika na konci hry - vyvedené, vyhozené a opuštěné kameny<br />
 ![Statistika na konci hry (ukázková)](https://github.com/tturynova/vrhcaby-apr/blob/main/vrhcaby_statistika.png)
 
-
->>>>>>> origin/main
