@@ -42,5 +42,3 @@ Hráč
 - Statistika na konci hry - vyvedené, vyhozené a opuštěné kameny<br />
 ![Statistika na konci hry (ukázková)](https://github.com/tturynova/vrhcaby-apr/blob/main/vrhcaby_statistika.png)
 
-
->>>>>>> origin/main
