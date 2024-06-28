@@ -34,5 +34,12 @@ Hráč
 - KonzolovýHráč
 - AiHráč
 
+## Ukázky ze hry
+- Nabídka na začátku hry<br />
+![Startovací nabídka hry](https://github.com/tturynova/vrhcaby-apr/blob/main/vrhcaby_menu.png)
+- Průběh hry - lze vidět kámen v baru<br />
+![Průběh hry (AiHráč proti AiHráči)](https://github.com/tturynova/vrhcaby-apr/blob/main/vrhcaby_hra.png)
+- Statistika na konci hry - vyvedené, vyhozené a opuštěné kameny<br />
+![Statistika na konci hry (ukázková)](https://github.com/tturynova/vrhcaby-apr/blob/main/vrhcaby_statistika.png)
 
 
